@@ -11,5 +11,19 @@
 
     <artifactId>skills-and-pitfalls</artifactId>
 
+    <dependencies>
+        <!-- 引入 Web 功能 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- JSON 处理工具 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.31</version>
+        </dependency>
+    </dependencies>
+
 
 </project>
