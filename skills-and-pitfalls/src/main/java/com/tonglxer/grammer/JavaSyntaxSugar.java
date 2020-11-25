@@ -17,10 +17,12 @@ import java.util.Optional;
  * @date 2020/11/24
  */
 public class JavaSyntaxSugar {
-    // TODO: 2020/11/24 方法引用 
+
     public static void main(String[] args) {
         lambdaExample();
         streamExample();
+        System.out.println(optionalExample(
+                new Student(24, "tonglinxing")));
     }
 
     /**
@@ -55,7 +57,7 @@ public class JavaSyntaxSugar {
          * 2. 排序（可以传入Comparator参数进行自定义规则排序）
          * 3. 过滤条件（这里也是lambda写法，过滤大于1的数）
          * 4. 打印过滤后的结果
-         * （应当输出： 2 3）
+         * （案例输出： 2 3）
          * */
         System.out.println("I am a stream example.");
         age.stream().sorted().filter(a -> a>1).forEach(g -> {
@@ -77,14 +79,14 @@ public class JavaSyntaxSugar {
 //        return null;
         /** 上述代码的简单替换 */
         Optional<Student> stu = Optional.ofNullable(student);
+        // Student::getName 方法引用的写法
         return stu.map(Student::getName).orElse(null);
-        // TODO: 2020/11/24 例子找的不好 需要完善 
     }
     
-    // 内部类，用于demo测试
+    // 匿名静态内部类，用于demo测试
     @Data
     @AllArgsConstructor
-    private class Student {
+    private static class Student {
         int age;
         String name;
     }
