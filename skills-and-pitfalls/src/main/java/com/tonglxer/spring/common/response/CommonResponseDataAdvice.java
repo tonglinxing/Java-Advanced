@@ -56,8 +56,8 @@ public class CommonResponseDataAdvice implements ResponseBodyAdvice<Object> {
         CommonResponse<Object> response = new CommonResponse<>(0, "This is a empty response.");//默认为空响应
         if (null == o) {
             return response;
-        } else if (o instanceof CommonResponse) {//instance 语法代表左边是否是右边的实例
-            response = (CommonResponse<Object>) o;//强转类型
+        } else if (o instanceof CommonResponse) {
+            response = (CommonResponse<Object>) o;
         } else {
             // 将原生响应数据直接存入响应data中
             response.setData(o);
