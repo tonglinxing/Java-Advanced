@@ -17,53 +17,75 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class MultiThreadPrint {
 
+    private static Thread A, B, C;
+
     public static void main(String[] args) {
+        /**
+         * 简单的demo，所以没有使用异步控制
+         * 故无法同时调用两种实现方法
+         * 否则数据会重叠
+         * */
         lockSupport();
-        lockCondition();
+        System.out.println();
+//        lockCondition();
     }
 
     /**
      * LockSupport是JUC.locks下的工具类
-     * unpark()：阻塞当前线程
-     * park(Thread t)：唤醒指定线程
+     * unpark(Thread t)：唤醒指定线程
+     * park()：阻塞当前线程
      *
-     * 这个例子一直提示ABC可能尚未初始化变量
-     * 待解决
-     *
+     * 似乎因为执行的太快而导致结果不对 尚未定位到原因
+     * 暂时的解决办法：Thread.sleep(300);
      * */
     private static void lockSupport() {
         System.out.println("基于LockSupport实现：");
-        Thread A, B, C;
         A = new Thread(() -> {
             for (int i=0; i<5; i++) {
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    log.error("InterruptedException: ", e);
+                }
                 System.out.print(Thread.currentThread().getName());
+                // 唤醒B线程
                 LockSupport.unpark(B);
+                // 当前线程阻塞
                 LockSupport.park();
             }
-            System.out.println();
         }, "A");
         B = new Thread(() -> {
             for (int i=0; i<5; i++) {
-                System.out.print(Thread.currentThread().getName());
-                LockSupport.unpark(C);
+                // 阻塞当前线程，等待A线程唤醒
                 LockSupport.park();
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    log.error("InterruptedException: ", e);
+                }
+                System.out.print(Thread.currentThread().getName());
+                // 唤醒C线程
+                LockSupport.unpark(C);
             }
-            System.out.println();
         }, "B");
         C = new Thread(() -> {
             for (int i=0; i<5; i++) {
-                System.out.print(Thread.currentThread().getName());
-                LockSupport.unpark(A);
+                // 阻塞当前线程，等待B线程唤醒
                 LockSupport.park();
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    log.error("InterruptedException: ", e);
+                }
+                System.out.print(Thread.currentThread().getName() + " ");
+                // 唤醒A线程
+                LockSupport.unpark(A);
             }
-            System.out.println();
         }, "C");
         A.start();
         B.start();
         C.start();
     }
-
-
 
 
     /**
@@ -80,11 +102,11 @@ public class MultiThreadPrint {
             try {
                 lock.lock();
                 for (int i=0;i<5;i++) {
+                    Thread.sleep(300);
                     System.out.print(Thread.currentThread().getName());
                     conditionB.signal();
                     conditionA.await();
                 }
-                System.out.println();
             } catch (InterruptedException e) {
                 log.error("InterruptedException: ", e);
             }
@@ -93,6 +115,7 @@ public class MultiThreadPrint {
             try {
                 lock.lock();
                 for (int i=0;i<5;i++) {
+                    Thread.sleep(300);
                     System.out.print(Thread.currentThread().getName());
                     conditionC.signal();
                     conditionB.await();
@@ -105,7 +128,8 @@ public class MultiThreadPrint {
             try {
                 lock.lock();
                 for (int i=0;i<5;i++) {
-                    System.out.print(Thread.currentThread().getName());
+                    Thread.sleep(300);
+                    System.out.print(Thread.currentThread().getName() + " ");
                     conditionA.signal();
                     conditionC.await();
                 }

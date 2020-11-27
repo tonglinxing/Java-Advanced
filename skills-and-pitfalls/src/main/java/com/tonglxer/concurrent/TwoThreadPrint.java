@@ -10,6 +10,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * 双线程交替打印
+ *
  * @Author Tong LinXing
  * @date 2020/11/27
  */
