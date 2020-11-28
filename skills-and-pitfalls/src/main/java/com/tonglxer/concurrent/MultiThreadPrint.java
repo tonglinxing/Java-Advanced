@@ -32,6 +32,7 @@ public class MultiThreadPrint {
 
     /**
      * LockSupport是JUC.locks下的工具类
+     * 基于Unsafe类实现
      * unpark(Thread t)：唤醒指定线程
      * park()：阻塞当前线程
      *
