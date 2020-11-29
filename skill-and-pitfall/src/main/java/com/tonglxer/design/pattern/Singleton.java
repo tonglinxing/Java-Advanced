@@ -1,4 +1,4 @@
-package com.tonglxer.design.patterns;
+package com.tonglxer.design.pattern;
 
 /**
  * 单例模式的几种写法
