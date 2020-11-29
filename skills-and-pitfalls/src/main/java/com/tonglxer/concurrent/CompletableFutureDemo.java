@@ -97,30 +97,6 @@ public class CompletableFutureDemo {
         }
     }
 
-    private CompletableFuture<Integer> getTask1() {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                log.error("Task1 is interrupted.");
-            }
-            return 24;
-        }, threadPool);
-    }
-
-    private CompletableFuture<String> getTask2() {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                log.error("Task2 is interrupted.");
-            }
-
-            return "tonglxer";
-
-        }, threadPool);
-    }
-
     /**
      * 1. 当两个CompletionStage都正常完成计算的时候
      * 就会执行提供的action，用来组合另外一个异步的结果
