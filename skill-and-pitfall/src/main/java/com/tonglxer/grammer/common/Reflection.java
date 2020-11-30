@@ -1,6 +1,5 @@
-package com.tonglxer.grammer;
+package com.tonglxer.grammer.common;
 
-import com.tonglxer.dto.Student;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -17,7 +16,8 @@ import java.lang.reflect.Method;
  */
 @Slf4j
 public class Reflection {
-    public static void main(String[] args) {
+
+    public static void reflectionDemo() {
         Student instance = new Student(24, "TongLinXing");
         /**
          * 1. 成员变量和方法的获取

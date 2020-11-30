@@ -1,7 +1,6 @@
-package com.tonglxer.dto;
+package com.tonglxer.grammer.common;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**

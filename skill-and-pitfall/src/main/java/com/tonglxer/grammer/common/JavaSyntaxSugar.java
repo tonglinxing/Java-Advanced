@@ -1,4 +1,4 @@
-package com.tonglxer.grammer;
+package com.tonglxer.grammer.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,13 +17,6 @@ import java.util.Optional;
  * @date 2020/11/24
  */
 public class JavaSyntaxSugar {
-
-    public static void main(String[] args) {
-        lambdaExample();
-        streamExample();
-        System.out.println(optionalExample(
-                new Student(24, "tonglinxing")));
-    }
 
     /**
      * lambda表达式
