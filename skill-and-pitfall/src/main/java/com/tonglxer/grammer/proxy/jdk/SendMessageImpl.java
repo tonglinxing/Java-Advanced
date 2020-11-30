@@ -1,6 +1,8 @@
 package com.tonglxer.grammer.proxy.jdk;
 
 /**
+ * 模拟的目标类
+ *
  * @Author Tong LinXing
  * @date 2020/11/30
  */
