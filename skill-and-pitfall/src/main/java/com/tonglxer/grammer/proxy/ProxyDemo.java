@@ -1,5 +1,7 @@
 package com.tonglxer.grammer.proxy;
 
+import com.tonglxer.grammer.proxy.cglib.CGLIBSendMessage;
+import com.tonglxer.grammer.proxy.cglib.CGLIBSendMessageProxyFactory;
 import com.tonglxer.grammer.proxy.jdk.JdkProxyFactory;
 import com.tonglxer.grammer.proxy.jdk.SendMessage;
 import com.tonglxer.grammer.proxy.jdk.SendMessageImpl;
@@ -11,6 +13,8 @@ import com.tonglxer.grammer.proxy.jdk.SendMessageImpl;
 public class ProxyDemo {
     public static void main(String[] args) {
         jdkProxyDemo();
+        System.out.println();
+        cglibProxyDemo();
     }
 
     /**
@@ -24,7 +28,15 @@ public class ProxyDemo {
         Object object = JdkProxyFactory.getProxy(new SendMessageImpl());
         if (object instanceof SendMessage) {
             SendMessage sendMessage = (SendMessage)object;
-            sendMessage.send("Hello Proxy.");
+            sendMessage.send("Hello jdk Proxy.");
+        }
+    }
+
+    private static void cglibProxyDemo() {
+        Object object = CGLIBSendMessageProxyFactory.getProxy(CGLIBSendMessage.class);
+        if (object instanceof CGLIBSendMessage) {
+            CGLIBSendMessage sendMessage = (CGLIBSendMessage)object;
+            sendMessage.send("Hello cglib Proxy.");
         }
     }
 }

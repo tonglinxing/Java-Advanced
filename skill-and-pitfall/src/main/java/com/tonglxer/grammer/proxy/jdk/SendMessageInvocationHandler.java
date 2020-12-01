@@ -28,9 +28,9 @@ public class SendMessageInvocationHandler implements InvocationHandler {
      * */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        System.out.println("我是代理类，现在是调用目标类方法之前...");
+        System.out.println("我是jdk代理类，现在是调用目标类方法之前...");
         Object result = method.invoke(target, args);
-        System.out.println("我是代理类，现在是调用目标类方法之后...");
+        System.out.println("我是jdk代理类，现在是调用目标类方法之后...");
         return result;
     }
 }
