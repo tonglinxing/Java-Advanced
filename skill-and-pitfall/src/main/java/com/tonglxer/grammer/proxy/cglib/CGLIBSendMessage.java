@@ -1,6 +1,8 @@
 package com.tonglxer.grammer.proxy.cglib;
 
 /**
+ * cglib动态代理机制不需要基于接口
+ *
  * @Author Tong LinXing
  * @date 2020/12/1
  */
