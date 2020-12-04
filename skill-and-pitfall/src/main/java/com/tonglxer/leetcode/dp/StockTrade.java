@@ -80,4 +80,16 @@ public class StockTrade {
         }
         return maxProfit;
     }
+
+    private static int maxProfit_infinite(int[] prices) {
+        int n = prices.length;
+        int dp_0 = 0;
+        int dp_1 = Integer.MIN_VALUE;
+        for (int i=0; i<n; i++) {
+            dp_0 = Math.max(dp_0, dp_1 + prices[i]);
+            // 和k限制为1时的区别
+            dp_1 = Math.max(dp_1, dp_0 - prices[i]);
+        }
+        return dp_0;
+    }
 }
