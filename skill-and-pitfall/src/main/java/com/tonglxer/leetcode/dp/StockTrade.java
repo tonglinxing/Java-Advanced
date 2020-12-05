@@ -36,9 +36,6 @@ public class StockTrade {
 
     private static int maxProfit_Two(int[] prices) {
         int n = prices.length;
-        if (n == 0) {
-            return 0;
-        }
         int dp_1_0 = 0;
         int dp_1_1 = Integer.MIN_VALUE;
         int dp_2_0 = 0;
@@ -54,9 +51,6 @@ public class StockTrade {
 
     private static int maxProfit_One(int[] prices) {
 //        int n = prices.length;
-//        if (n == 0) {
-//            return 0;
-//        }
 //        int dp_0 = 0;
 //        int dp_1 = Integer.MIN_VALUE;
 //        for (int i=0; i<n; i++) {
