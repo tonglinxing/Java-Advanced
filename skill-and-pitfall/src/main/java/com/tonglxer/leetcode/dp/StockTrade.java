@@ -80,9 +80,23 @@ public class StockTrade {
         int dp_0 = 0;
         int dp_1 = Integer.MIN_VALUE;
         for (int i=0; i<n; i++) {
+            int temp = dp_0;
             dp_0 = Math.max(dp_0, dp_1 + prices[i]);
             // 和k限制为1时的区别
-            dp_1 = Math.max(dp_1, dp_0 - prices[i]);
+            dp_1 = Math.max(dp_1, temp - prices[i]);
+        }
+        return dp_0;
+    }
+
+    private static int maxProfit_cool(int[] prices) {
+        int n = prices.length;
+        int dp_0 = 0, dp_1 = Integer.MIN_VALUE;
+        int dp_pre = 0;
+        for (int i=0; i<n; i++) {
+            int temp = dp_0;
+            dp_0 = Math.max(dp_0, dp_1 + prices[i]);
+            dp_1 = Math.max(dp_1, dp_pre - prices[i]);
+            dp_pre = temp;
         }
         return dp_0;
     }

@@ -38,6 +38,7 @@ public class ZooKeeperDemo {
     private static void zookeeperTest() throws Exception {
         // 重试策略：初试时间为1s，重试3次
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(BASE_SLEEP_TIME, MAX_RETIES);
+        // 建造者模式
         CuratorFramework zkClient = CuratorFrameworkFactory.builder()
                 // 服务端ip和端口
                 .connectString("127.0.0.1:2181")
