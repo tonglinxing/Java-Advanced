@@ -2,6 +2,7 @@ package com.tonglxer.grammer.common;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  *
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
  */
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Student {
     private int age;
 
