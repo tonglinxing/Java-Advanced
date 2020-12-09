@@ -42,10 +42,9 @@ public class TwoThreadPrint {
     }
 
     public static void main(String[] args) {
-        MyRunnable runnable = new MyRunnable();
         ExecutorService threadPool = Executors.newFixedThreadPool(2);
         for (int i=0; i<2; i++) {
-            threadPool.submit(runnable);
+            threadPool.submit(new MyRunnable());
         }
     }
 }
