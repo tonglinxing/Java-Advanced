@@ -17,7 +17,7 @@ public class Generic<T> {
      * 静态泛型方法，与类中的T非同一个
      *
      * */
-    private static <T> void get (T t) {
+    private static <T> void showString(T t) {
         System.out.println("static method : " + t.toString());
     }
 

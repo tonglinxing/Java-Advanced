@@ -6,6 +6,11 @@ package com.tonglxer.leetcode.dp;
  */
 public class RobProblem {
 
+    public static void main(String[] args) {
+        int[] nums = new int[]{4,3,4,9};
+        System.out.println(rob(nums));
+    }
+
     private static int rob(int[] nums) {
         int n = nums.length;
         if (n == 0) {
