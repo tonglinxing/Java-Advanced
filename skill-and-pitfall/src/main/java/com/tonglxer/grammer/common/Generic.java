@@ -14,6 +14,14 @@ public class Generic<T> {
     private T mark;
 
     /**
+     * 静态泛型方法，与类中的T非同一个
+     *
+     * */
+    private static <T> void get (T t) {
+        System.out.println("static method : " + t.toString());
+    }
+
+    /**
      * <note>这不是泛型方法</note>
      * 只是泛型类中的一个普通方法
      * 这里的T和类中的T保持一致
