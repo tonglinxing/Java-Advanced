@@ -1,0 +1,443 @@
+- ## JAVA底层知识：多线程与并发
+
+
+
+- #### 进程和线程
+
+1. Java对操作系统提供的功能进行封装，包括进程和线程
+2. 运行一个程序会产生一个进程，进程包含至少一个线程
+3. 每个进程对应一个JVM实例，多个线程共享JVM里的堆
+4. Java采用单线程编程模型，程序会自动创建主线程
+5. 主线程可以创建子线程，原则上要后于子线程完成执行
+
+
+
+**进程：** 独占内存空间，保存各自运行状态，相互间不干扰且可以相互切换，为并发处理任务提供了可能
+
+**线程：** 共享进程的内存资源，相互间切换更快速，支持更细粒度的任务控制，使进程内的子任务得以并发执行
+
+进程是资源分配的最小单位，线程是CPU调度的最小单位
+
+1. 所有与进程相关的资源，都被记录在PCB中
+2. 进程是抢占处理机的调度单位；线程属于某个进程，共享其资源
+3. 线程只由堆栈寄存器、程序计数器和TCB组成
+
+**区别：**
+
+1. 线程不能看做独立应用，而进程可以
+2. 进程有独立的地址空间，相互不影响，线程只是进程的不同执行路径
+3. 线程没有独立的地址空间，多进程的程序比多线程程序健壮
+4. 进程的切换比线程的切换开销大
+
+---
+
+- #### 关于线程
+
+![](../image/Java多线程.png)
+
+- **Thread中的start和run方法的区别**
+
+1. 调用start()方法会创建一个新的子线程并启动
+2. run()方法只是Thread的一个普通方法调用，依旧在主线程里执行
+
+- **Thread和Runnable是什么关系**
+
+1. Thread是实现了Runnable接口的类，使得run支持多线程
+2. 因类的单一继承原则，推荐多使用Runnable接口
+
+- **如何给run()传参**
+
+1. 构造函数传参
+2. 成员变量传参
+3. 回调函数传参
+
+- **如何处理线程的返回值**
+
+1. 主线程等待法
+2. 使用Thread类的join()阻塞当前线程以等待子线程处理完毕
+3. 通过Callable接口实现：通过FutureTask 或 线程池获取
+
+```java
+public class MyCallable implements Callable<String> {
+  @Override
+  public String call() throws Exception {
+    String value = "test";
+    System.out.println("Ready to work");
+    Thread.currentThread().sleep(5000);//设定该线程强制休息5秒以便于测试结果
+    System.out.println("Task done");
+    return value;
+  }
+}//FutureTask方式
+ /**
+ *输出：
+ *task has not finished, please wait!
+ *Ready to work
+ *task done
+ *task return: test
+ */
+ public class FutureTaskDemo {
+   public static void main(String[] args) {
+     FutureTask<String> task = new FutureTask<String>(new MyCallable());
+     new Thread(task).start();
+     if (!task.isDone()) {
+       System.out.println("task has not finished, please wait!");
+     }
+     System.out.println("task return :" + task.get());//get会等待线程有返回值后才执行
+   }
+ }
+ //线程池方式-相比前者可以并发的处理结果
+ /**
+ *task has not finished, please wait!
+ *Ready to work
+ *task done
+ *test
+ */
+public class ThreadPoolDemo {
+     public static void main(String[] args) {
+       ExcutorService newCachedThreadPool = Excutors.newCachedThreadPool();//创建一个线程池
+       Future<String> future = newCachedThreadPool.submit(new MyCallable());
+       if (!future.isDone()) {
+         System.out.println("task has not finished, please wait!");
+       }
+       System.out.println(future.get());//此处会抛出异常，为了简单所以没写捕获也没把异常抛出
+       newCachedThreadPool.shutdown();//线程池需要手动关闭
+     }
+   }
+```
+
+
+
+- **线程的状态**
+
+1. 新建(New)：创建后尚未启动的线程状态
+2. 运行(Runnable)：包含Running和Ready
+3. 无限等待(Waiting)：不会被分配CPU执行时间，需要显式被唤醒
+4. 限期等待(Timed Waiting)：在一定时间后会由系统自动唤醒
+5. 阻塞(Blocked)：等待获取排它锁
+6. 结束(Terminated)：已终止线程的状态，线程已经结束执行
+
+- **sleep和wait**
+
+基本的差别：
+
+1. sleep是Thread类的方法，wait是Object类中定义的方法
+2. sleep()方法可以在任何地方使用
+3. wait()方法只能在synchronized方法或synchronized块中使用
+
+本质的区别：
+
+1. Thread.sleep只会让出CPU，不会导致锁行为的改变
+2. Object.wait不仅让出CPU，还会释放已经占有的同步资源锁
+
+- **notify和notifyAll**
+
+**锁池EntryList：** 线程等待某一对象锁的释放时进入锁池
+
+**等待池WaitList：** 线程调用某个对象的wait()后进入等待池直至被notify或notifyAll唤醒才会离开等待池进入锁池
+
+1. notifyAll会让所有处于等待池的线程全部进入锁池去竞争获取锁的机会
+2. notify只会随机选取一个处于等待池中的线程进入锁池去竞争获取锁的机会
+
+- **关于yield函数**
+
+当调用Thread.yield()函数时，会给线程调度器一个当前线程愿意让出CPU使用的暗示，但是线程调度器可能会忽略这个暗示
+
+- **如何中断线程**
+
+已经被抛弃的方法：
+
+1. 通过调用stop()方法
+2. 通过调用suspend()和resume()方法
+
+目前使用的方法：
+
+调用interrupt()，通知线程应该中断了
+
+1. 如果线程处于被阻塞状态，那么线程将立即退出被阻塞状态，并抛出一个InterruptedException异常
+2. 如果线程处于正常活动状态，那么会将该线程的中断标志设置为true。被设置中断标志的线程将继续正常运行，不受影响
+
+需要被调用的线程配合中断：在正常运行任务时，经常检查本线程的中断标志位，如果被设置了中断标志就自行停止线程
+
+
+
+- **synchronized**
+
+synchronized锁的不是代码而是对象
+
+**线程安全问题的主要诱因**
+
+1. 存在共享数据(也称临界资源)
+2. 存在多条线程共同操作这些共享数据
+
+**解决问题的根本办法：** 同一时刻有且只有一个线程在操作共享数据，其他线程必须等到该线程处理完数据后再对共享数据进行操作
+
+**互斥锁的特性：**互斥性、可见性
+
+**获取对象锁**
+
+1. 同步代码块(synchronized(this), synchronized(类实例对象) ), 锁是()中的实例对象
+2. 同步非静态方法(synchronized method), 锁是当前对象的实例对象
+
+**获取类锁**
+
+1. 同步代码块(synchronized(类.class)), 锁是()中的类对象(Class对象)
+2. 同步静态方法(synchronized static method), 锁是当前对象的类对象(Class对象)
+
+**对象锁和类锁的总结**
+
+1. 有线程访问对象的同步代码块时，另外的线程可以访问该对象的非同步代码块
+2. 若锁住的是同一对象，一个线程在访问对象的同步代码块(方法)时，另一个访问对象的同步代码块(方法)的线程会被阻塞
+3. 若锁住的是同一对象，一个线程在访问对象的同步代码块时，另一个访问对象同步方法的线程会被阻塞，反之亦然
+4. 同一个类的不同对象的对象锁互不干扰
+5. 类锁由于也是一种特殊的对象锁故与对象锁类似，但由于一个类只有一把对象锁，所以同一个类的不同对象使用类锁将会是同步的
+6. 类锁和对象锁互不干扰
+
+- **synchronized底层实现原理**
+
+**Java对象头**
+
+对象在内存中的布局：对象头、实例数据、对齐填充
+
+**Monitor：** 每个对象创建后就自带了一把看不见的锁，也称监视器锁
+
+**重入：** 当一个线程再次请求自己持有对象锁的临界资源时，这种情况属于重入不会被阻塞
+
+
+**自旋锁与自适应自旋锁**
+
+自旋锁：
+
+1. 许多情况下，共享数据的锁定状态持续时间较短，切换线程不值得
+2. 通过让线程执行忙循环等待锁的释放，不让出CPU
+3. 缺点：若锁被其他线程长时间占用，会带来许多性能上的开销
+
+自适应自旋锁：
+
+1. 自旋的次数不再固定
+2. 由前一次在同一个锁上的自旋时间及锁的拥有者的状态来决定
+
+**锁消除：** 一种更彻底的优化
+
+JIT编译时，对运行上下文进行扫描，去除不可能存在竞争的锁
+
+**锁粗化：** 另一种极端
+
+通过扩大加锁的范围，避免反复加锁和解锁
+
+- **synchronized的四种状态**
+
+无锁、偏向锁、轻量级锁、重量级锁
+
+**锁膨胀方向：** 从左到右
+
+**偏向锁：** 减少同一线程获取锁的代价（不适用于锁竞争比较激烈的多线程场合）
+
+
+大多数情况下，锁不存在多线程竞争，总是由同一线程多次获得
+
+核心思想：
+
+如果一个线程获得了锁则进入偏向模式，当该线程再次请求锁时无需再做任何同步操作，即获取锁的过程中只需要检查Mark Word的锁标记位以及当前线程的id等于Mark Word的ThreadID即可。
+
+**轻量级锁：** 当第二个线程加入锁竞争时偏向锁就会升级为轻量级锁
+
+适应的场景：线程交替执行同步块
+
+若存在同一时间访问同一锁的情况，就会导致轻量级锁膨胀为**重量级锁**
+
+**锁的内存语义**
+
+1. 当线程释放锁时，Java内存模型会把该线程对应的本地内存中的共享变量刷新到主内存中
+2. 当线程获取锁是，Java内存模型会把该线程对应的本地内存置为无效，从而使得被监视器保护的临界区代码必须从主内存中读取共享变量
+
+
+
+- **synchronized和ReentrantLock的区别**
+
+**ReentrantLock(再入锁)**
+
+1. 位于java.util.concurrent.locks包
+2. 和CountDownLatch、FutureTask、Semaphore一样基于AQS实现
+3. 能够实现比synchronized更细粒度的控制，如控制fairness
+4. 调用lock()之后，必须调用unlock()解锁
+5. 性能未必比synchronized高，并且也是可重入的
+
+公平锁：获取锁的顺序按先后调用lock方法的顺序（谨慎使用公平锁）
+
+非公平锁：抢占的顺序随机（synchronized属于非公平锁）
+
+**ReentrantLock将锁对象化**
+
+1. 判断是否有线程，或者某个特定线程，在排队等待获取锁
+2. 带超时的获取锁的尝试
+3. 感知有没有成功获取锁
+
+**区别：**
+
+1. synchronized是关键字，ReentrantLock是类
+2. ReentrantLock可以对获取锁的等待时间进行设置，避免死锁
+3. ReentrantLock可以获取各种锁的信息
+4. ReentrantLock可以灵活地实现多路通知
+5. **机制：** sync操作Mark Word， lock调用Unsafe类的park() 方法 
+
+
+
+- **Java内存模型JMM**
+
+
+JMM本身是一种抽象的概念，并不真实存在，它描述的是一组规则或规范，通过这组规范定义了程序中各个变量（包括实例字段、静态字段和构成数组对象的元素）的访问方式
+
+**JMM中的主内存**
+
+1. 存储Java实例对象
+2. 包括成员变量、类信息、常量、静态变量等
+3. 属于数据共享等区域，多线程并发操作时会引发线程安全问题
+
+**JMM中的工作内存**
+
+1. 存储当前方法的所有本地变量信息，本地变量对其他线程不可见
+2. 字节码行号指示器、Native方法信息
+3. 属于线程私有数据区域，不存在线程安全问题
+
+**JMM与Java内存区域划分是不同的概念层次**
+
+1. JMM描述的是一组规则，围绕原子性、有序性、可见性展开
+2. 相似点：存在共享区域和私有区域
+
+**主内存与工作内存的数据存储类型以及操作方式归纳**
+
+1. 方法里的基本数据类型本地变量将直接存储在工作内存的栈帧结构中
+2. 引用类型的本地变量：引用存储在工作内存中，实例存储在主内存中
+3. 成员变量、static变量、类信息均会被存储在主内存中
+4. 主内存共享的方式是线程各拷贝一份数据到工作内存，操作完成后刷新回主内存
+
+**指令重排需要满足的条件**（JVM常常对指令进行重排）
+
+1. 在单线程环境下不能改变程序运行的结果
+2. 存在数据依赖关系的不允许重排
+
+（无法通过happens-before原则推导出来的才能进行指令的重排）
+
+**happens-before的原则：** A操作的结果需要对B操作可见，则A与B存在happens-before关系
+
+```java
+i = 1; //线程A执行
+j = i; //线程B执行
+```
+
+1. 程序次序规则
+2. 锁定规则
+3. volatile变量原则：对一个变量的写操作先行发生于后面对这个变量的读操作
+4. 传递规则
+5. 线程启动规则
+6. 线程中断规则
+7. 线程终结规则
+8. 对象终结规则
+
+如果两个操作不满足上述任意一个happens-before规则，那么这两个操作就没有顺序的保障，JVM可以对这两个操作进行重排
+
+
+
+**volatile：** JVM提供的轻量级同步机制
+
+1. 保证被volatile修饰的共享变量对所有线程总是可见的
+2. 禁止指令重排
+
+**volatile变量为何立即可见**
+
+1. 当写一个volatile变量时，JMM会把该线程对应的工作内存中的共享变量刷新都=到主内存中
+2. 当读取一个volatile变量时，JMM会把该线程对应的工作内存置为无效即只能从主内存读取
+
+**volatile如何禁止指令重排优化**
+
+内存屏障（Memory Barrier）：
+
+1. 保证特定操作的执行顺序
+2. 保证某些变量的内存可见性
+
+通过插入内存屏障指令禁止在内存屏障前后的指令执行重排序优化
+
+强制刷出各种CPU的缓存数据，因此任何CPU上的线程都能读取到这些数据的最新版本
+
+```java
+//经典的单例模式Java实现代码
+//单例的双重检测实现
+public class Singleton {
+  private volatile static Singleton instance;//volatile禁止指令重排即可避免多线程可能发生的问题
+  
+  private Singleton(){}
+  
+  public static Singleton getInstance() {
+    if (instance == null) {//第一次检测
+      synchronized (Singleton.class) {//同步
+        if (instance == null) {
+          //多线程环境下可能出现问题的地方
+          //所以需要添加volatile关键字修饰变量禁止指令重排
+          instance = new Singleton();
+        }
+      }
+    }
+    return instance;
+  }
+}
+```
+
+**volatile和synchronized的区别**
+
+1. volatile本质是在告诉JVM当前变量在寄存器（工作内存）中的值是不确定的，需要从主线程中读取；synchronized则是锁定当前变量，只有当前线程可以访问该变量，其他线程被阻塞住直到该线程完成变量操作为止
+2. volatile仅能用在变量级别；synchronized则可以使用在变量、方法和类级别
+3. volatile仅能实现变量的修改可见性，不能保证原子性；而synchronized则可以保证变量修改的可见性和原子性
+4. volatile不会造成线程的阻塞；synchronized可能会造成线程的阻塞
+5. volatile标记的变量不会被编译器优化；synchronized标记的变量可以被编译器优化
+
+
+
+**CAS（Compare and Swap）：** 最常见的乐观锁
+
+一种高效实现线程安全性的方法：
+
+1. 支持原子更新操作，适用于计数器，序列发生器等场景
+2. 属于乐观锁机制，号称lock-free
+3. CAS操作失败时由开发者决定是继续尝试还是执行别的操作
+
+**CAS思想**
+
+1. 包含三个操作数：内存位置V（指的是主内存）、预期原值A和新值B
+2. 利用A操作生成B并在刷新回主内存时对比A和V所在的值是否相等，相等则写入否则操作失败
+
+**CAS多数情况下对开发者来说是透明的**
+
+1. J.U.C的atomic包提供了常用的原子性数据类型以及引用、数组等相关原子类型和更新操作工具，是很多线程安全程序的首选
+2. Unsafe类虽然提供CAS服务，但因能够操纵任意内存地址读写而有隐患
+3. Java9以后，可以使用Variable Handle API来替代Unsafe
+
+**CAS缺点**
+
+1. 若循环时间长，则开销很大
+2. 只能保证一个共享变量的原子操作
+3. ABA问题      解决：AtomicStampedReference
+
+
+
+- **Java线程池**
+
+利用Executors创建不同的线程池满足不同场景的需求
+
+**Fork/Join框架**             Work-Stealing算法：某个线程从其他队列里窃取任务来执行
+
+把大任务分割成若干个小任务并行执行，最终汇总每个小任务结果后得到大任务的结果的框架
+
+**为什么要使用线程池**
+
+1. 降低资源消耗（重复利用已创建的线程）
+2. 提高线程的可管理性
+
+---
+
+
+
+
+
+
+
+
