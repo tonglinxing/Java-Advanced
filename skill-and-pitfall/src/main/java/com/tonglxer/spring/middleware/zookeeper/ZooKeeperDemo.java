@@ -1,4 +1,4 @@
-package com.tonglxer.middleware.zookeeper;
+package com.tonglxer.spring.middleware.zookeeper;
 
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
