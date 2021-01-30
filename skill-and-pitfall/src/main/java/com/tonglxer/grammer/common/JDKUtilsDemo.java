@@ -2,9 +2,11 @@ package com.tonglxer.grammer.common;
 
 import lombok.AllArgsConstructor;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -16,11 +18,11 @@ import java.util.TreeMap;
  * @Author Tong LinXing
  * @date 2021/1/27
  */
-public class CollectionsAPI {
+public class JDKUtilsDemo {
     public static void main(String[] args) {
-        sortCompare();
+        CollectionsAndArrays();
+        StringMethod();
     }
-
 
     /**
      * 对对象排序有两种方法可以自定义排序规则：
@@ -31,7 +33,7 @@ public class CollectionsAPI {
      *
      * 1. 传入自定义比较器
      */
-    private static void sortCompare() {
+    private static void CollectionsAndArrays() {
         int[][] nums = {{1,3}, {1,2}, {4,5}, {3,7}};
         Arrays.sort(nums, (o1, o2) -> {
             // 若第一位数字相等则比较第二位数字升序
@@ -51,6 +53,25 @@ public class CollectionsAPI {
         List<Map.Entry<Worker,String>> list = new ArrayList<>(map.entrySet());
         // 将map按键升序
         Collections.sort(list, (o1, o2) -> o1.getValue().compareTo(o2.getValue()));
+        List<Integer> intList = new ArrayList<>(8);
+        // 可用于初始化
+        Collections.addAll(intList, 0, 0, 1);
+        // 将集合内元素全部填充为0
+        Collections.fill(intList, 0);
+        // 获取集合内某一元素的数量（出现频率）
+        Collections.frequency(intList, 0);
+        // 判断两个集合是否相交，不相交则返回true，反之则然
+        Collections.disjoint(intList, intList);
+        /**
+         * <p>这是一个大坑</p>
+         * 将数组转换为列表, 但该列表无法进行增删操作
+         * 这个ArrayList类并非java.util.ArrayList类
+         * 而是Arrays类的静态内部类
+         */
+        Arrays.asList(new int[]{1,2,3});
+        int[] temp = new int[8];
+        // 这个相对于集合的fill，更实用
+        Arrays.fill(temp, 1);
     }
 
     /**
@@ -95,4 +116,30 @@ public class CollectionsAPI {
             return Objects.hash(age, workerTime, name);
         }
     }
+
+    /**
+     * 字符串相关方法
+     * 可能是实际开发中最常使用的一些方法
+     * 到处都是字符串 :）
+     */
+    private static void StringMethod() {
+        String str = new String("   hello tonglxer.");
+        // 去除前后多余空格后按空格分割
+        str.trim().split(" ");
+        /**
+         * String.trim() 可以去除字符串前后的“半角”空白字符
+         * String.strip() 可以去除字符串前后的“全角和半角”空白字符
+         */
+        str.strip();
+        // 判断是否以xx开始或结尾
+        str.startsWith(" ");
+        str.endsWith("er.");
+        // 以指定编码获取字符串的字节数组
+//        str.getBytes("UTF-8");
+        // 正则表达式匹配，匹配成功返回true，反之则然
+        str.matches("[a-zA-Z0-9_-]+");
+        // 拼接成新串："   hello tonglxer.I love u."
+        str.concat("I love u.");
+    }
+
 }
