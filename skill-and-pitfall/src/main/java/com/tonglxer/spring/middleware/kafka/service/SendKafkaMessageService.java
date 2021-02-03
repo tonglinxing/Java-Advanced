@@ -16,10 +16,16 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class SendKafkaMessageService {
-    // 定义一个主题
+    /**
+     * 定义一个主题
+     */
     public static final String topic = "TONG";
 
-    // kafka消息模板
+    /**
+     * kafka消息模板
+     * Spring Boot根据application.yml属性文件中
+     * 配置的属性自动配置并初始化KafkaTemplate。
+     */
     private final KafkaTemplate<Object, Object> kafkaTemplate;
 
     @Autowired
