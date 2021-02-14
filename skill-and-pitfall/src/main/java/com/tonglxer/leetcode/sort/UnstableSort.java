@@ -13,9 +13,9 @@ public class UnstableSort {
 
     public static void main(String[] args) {
         int[] nums = new int[] {
-                4,5,2,6,1,9,0
+                7,6,5,4,3,2,1
         };
-        quickSort(nums, 0, 6);
+        quickSort(nums, 0, nums.length-1);
     }
 
     private static void quickSort(int[] nums, int low, int high) {
@@ -34,7 +34,6 @@ public class UnstableSort {
                 right--;
             }
             nums[left] = nums[right];
-
             while (left < right && nums[left] <= temp) {
                 left++;
             }

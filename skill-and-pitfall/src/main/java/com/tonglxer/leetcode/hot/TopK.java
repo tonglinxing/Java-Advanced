@@ -9,6 +9,16 @@ import java.util.PriorityQueue;
  * @date 2021/2/12
  */
 public class TopK {
+    public static void main(String[] args) {
+        int[] nums = new int[]{
+                6,5,4,3,7,8,2,1
+        };
+        int[] res = quickSelect(nums, 7);
+        for (int n : res) {
+            System.out.println(n);
+        }
+    }
+
     /**
      * 基于堆排
      *
@@ -16,7 +26,7 @@ public class TopK {
      * @param k
      * @return 前k个最大的数
      */
-    public int[] heapSort(int[] nums, int k) {
+    public static int[] heapSort(int[] nums, int k) {
         int[] res = new int[k];
         if (k == 0) {
             return res;
@@ -43,11 +53,11 @@ public class TopK {
      * @param k
      * @return 前k个最大的数
      */
-    public int[] quickSelect(int[] nums, int k) {
+    public static int[] quickSelect(int[] nums, int k) {
         if (k >= nums.length) {
             return nums;
         }
-        int target = nums.length - k;
+        int target = nums.length - k - 1;
         int low = 0;
         int high = nums.length - 1;
         while (low < high) {
@@ -61,15 +71,14 @@ public class TopK {
             }
         }
         int[] res = new int[k];
-        for (int i = target; i<nums.length; i++) {
-            int j = 0;
-            res[j] = nums[i];
-            j++;
+        int j = 0;
+        for (int i = target+1; i<nums.length; i++) {
+            res[j++] = nums[i];
         }
         return res;
     }
 
-    private int partition(int[] nums, int low, int high) {
+    private static int partition(int[] nums, int low, int high) {
         int pivot = nums[low];
         while (low < high) {
             while (low < high && nums[high] >= pivot) {
