@@ -50,7 +50,15 @@ public class StableSort {
     }
 
 
-    private static void mergeSort(int[] nums, int low, int high) {
+    /**
+     * 归并排序
+     * 类似二叉树的递归后续遍历
+     *
+     * @param nums
+     * @param low
+     * @param high
+     */
+    public static void mergeSort(int[] nums, int low, int high) {
         // 边界条件
         if (low == high) {
             return;
@@ -59,6 +67,7 @@ public class StableSort {
             int mid = low + (high-low)/2;
             mergeSort(nums, low, mid);
             mergeSort(nums, mid+1, high);
+            // 两两合并
             merge(nums, low, mid+1, high);
         }
     }
@@ -72,12 +81,9 @@ public class StableSort {
         for (int i=mid; i<=high;i++) {
             rightNums[i-mid] = nums[i];
         }
-
         int i = 0, j = 0;
         // arrays数组的第一个元素
         int  k = low;
-
-
         //比较这两个数组的值，哪个小，就往数组上放
         while (i < leftNums.length && j < rightNums.length) {
             //谁比较小，谁将元素放入大数组中,移动指针，继续比较下一个
@@ -91,7 +97,6 @@ public class StableSort {
                 k++;
             }
         }
-
         //如果左边的数组还没比较完，右边的数都已经完了，那么将左边的数抄到大数组中(剩下的都是大数字)
         while (i < leftNums.length) {
             nums[k] = leftNums[i];
