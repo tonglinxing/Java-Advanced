@@ -13,13 +13,14 @@ public class StableSort {
 
     public static void main(String[] args) {
         int[] nums = new int[]{3,1,2,4,6,3};
-        insertionSort(nums);
-        System.out.println("InsertSort：");
-        Arrays.stream(nums).forEach( n -> System.out.print(n + " "));
-        System.out.println("\nMergeSort：");
+//        insertionSort(nums);
+//        System.out.println("InsertSort：");
+//        Arrays.stream(nums).forEach( n -> System.out.print(n + " "));
+//        System.out.println("\nMergeSort：");
         mergeSort(nums, 0, 5);
         System.out.println(Arrays.toString(nums));
     }
+
     /**
      * 直接插入排序
      *
@@ -60,7 +61,7 @@ public class StableSort {
      */
     public static void mergeSort(int[] nums, int low, int high) {
         // 边界条件
-        if (low == high) {
+        if (low >= high) {
             return;
         } else {
             // 这种写法可以防止整型溢出
@@ -97,13 +98,13 @@ public class StableSort {
                 k++;
             }
         }
-        //如果左边的数组还没比较完，右边的数都已经完了，那么将左边的数抄到大数组中(剩下的都是大数字)
+        // 如果左边的数组还没比较完，右边的数都已经完了，那么将左边的数抄到大数组中(剩下的都是大数字)
         while (i < leftNums.length) {
             nums[k] = leftNums[i];
             i++;
             k++;
         }
-        //如果右边的数组还没比较完，左边的数都已经完了，那么将右边的数抄到大数组中(剩下的都是大数字)
+        // 同上
         while (j < rightNums.length) {
             nums[k] = rightNums[j];
             k++;
