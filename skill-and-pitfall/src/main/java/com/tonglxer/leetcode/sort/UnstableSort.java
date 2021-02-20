@@ -1,6 +1,7 @@
 package com.tonglxer.leetcode.sort;
 
 import java.util.Arrays;
+import java.util.Stack;
 
 /**
  * 不稳定排序
@@ -15,7 +16,7 @@ public class UnstableSort {
         int[] nums = new int[] {
                 7,6,5,4,3,2,1
         };
-        shellSort(nums);
+        quickSortByStack(nums);
     }
 
     private static void quickSort(int[] nums, int left, int right) {
@@ -26,6 +27,39 @@ public class UnstableSort {
         // 开始递归
         quickSort(nums, left, mid-1);
         quickSort(nums, mid+1, right);
+    }
+
+    /**
+     * 快速排序（非递归）
+     *
+     * ①. 从数列中挑出一个元素，称为"基准"（pivot）。
+     * ②. 重新排序数列，所有比基准值小的元素摆放在基准前面，所有比基准值大的元素摆在基准后面（相同的数可以到任一边）。在这个分区结束之后，该基准就处于数列的中间位置。这个称为分区（partition）操作。
+     * ③. 把分区之后两个区间的边界（low和high）压入栈保存，并循环①、②步骤
+     * @param nums   待排序数组
+     */
+    public static void quickSortByStack(int[] nums) {
+        if (nums.length <= 0) {
+            return;
+        }
+        Stack<Integer> stack = new Stack<Integer>();
+        //初始状态的左右指针入栈
+        stack.push(0);
+        stack.push(nums.length - 1);
+        while (!stack.isEmpty()) {
+            //出栈进行划分
+            int high = stack.pop();
+            int low = stack.pop();
+            int pivotIdx = partition(nums, low, high);
+            //保存中间变量
+            if (pivotIdx > low) {
+                stack.push(low);
+                stack.push(pivotIdx - 1);
+            }
+            if (pivotIdx < high && pivotIdx >= 0){
+                stack.push(pivotIdx + 1);
+                stack.push(high);
+            }
+        }
     }
 
     private static int partition(int[] nums, int left, int right) {
