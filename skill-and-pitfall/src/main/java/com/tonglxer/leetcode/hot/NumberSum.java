@@ -101,6 +101,54 @@ public class NumberSum {
         return res;
     }
 
+    /**
+     * 更改了迭代方式，更加清晰
+     *
+     * @param nums
+     * @return
+     */
+    public static List<List<Integer>> threeSum_2(int[] nums) {
+        int n = nums.length;
+        List<List<Integer>> res = new ArrayList<>();
+        if (n < 3) {
+            return res;
+        }
+        Arrays.sort(nums);
+        for (int first=0; first<n-2; ++first) {
+            // 若第一个数大于0，则无继续迭代的必要，直接返回已有答案
+            if (nums[first] > 0) {
+                return res;
+            }
+            if (first > 0 && nums[first] == nums[first-1]) {
+                continue;
+            }
+            int target = -nums[first];
+            int second = first+1;
+            int third = n-1;
+            while (second < third) {
+                if (nums[second] + nums[third] == target) {
+                    res.add(new ArrayList<>(Arrays.asList(
+                            nums[first], nums[second], nums[third])));
+                    // 去重操作
+                    while (second<third && nums[second] == nums[second+1]) {
+                        second++;
+                    }
+                    while (second<third && nums[third] == nums[third-1]) {
+                        third--;
+                    }
+                    // 继续正常迭代
+                    second++;
+                    third--;
+                } else if (nums[second] + nums[third] > target) {
+                    third--;
+                } else {
+                    second++;
+                }
+            }
+        }
+        return res;
+    }
+
 
 
 }
