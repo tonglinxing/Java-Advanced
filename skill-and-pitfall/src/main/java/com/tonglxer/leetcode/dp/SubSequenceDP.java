@@ -19,7 +19,7 @@ public class SubSequenceDP {
         int len1 = s1.length();
         int len2 = s2.length();
         // base case是第0列与第0行均为0，数组已自动填充了默认值0故未显式说明
-        int[][] dp = new int[len1+1][len2+2];
+        int[][] dp = new int[len1+1][len2+1];
         for (int i=1; i<=len1; i++) {
             for (int j=1; j<=len2; j++) {
                 if (s1.charAt(i) == s2.charAt(j)) {
