@@ -28,4 +28,31 @@ public class Question {
         }
         return arr.length + k;
     }
+
+    public int maxSizeSlices(int[] slices) {
+        int n = slices.length;
+        int[] nums1 = new int[n-1];
+        int[] nums2 = new int[n-1];
+        // 由于首尾只能取其一，故分别判断两种情况
+        System.arraycopy(slices, 1, nums1, 0, n-1);
+        System.arraycopy(slices, 0, nums2, 0, n-1);
+        return Math.max(robRange(nums1), robRange(nums2));
+    }
+
+    public int robRange(int[] nums) {
+        int n = nums.length;
+        // n必然==原始数组长度-1
+        int choose = (n+1)/3;
+        // dp[i][j]表示从前i个元素取出j个不相邻的元素
+        int[][] dp = new int[n+1][choose+1];
+        for (int i=1; i<=n; i++) {
+            for (int j=1; j<=choose; j++) {
+                // 注意i-2<0的特殊情况
+                // 类似 打家劫舍+背包
+                dp[i][j] = Math.max(dp[i-1][j], (i-2>=0 ? dp[i-2][j-1] : 0) + nums[i-1]);
+            }
+        }
+        // n个元素取choose个值之和
+        return dp[n][choose];
+    }
 }
